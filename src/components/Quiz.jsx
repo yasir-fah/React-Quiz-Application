@@ -1,25 +1,40 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import completeImg from "../assets/quiz-complete.png";
 
 import QUESTIONS from "../questions.js";
-import QuestionTimer from "./QuestionTimer.jsx";
+import Question from "./Question.jsx";
 
 const TIMER = 5000;
 function Quiz() {
   const [userAnswers, setUserAnswers] = useState([]);
+  const [answerState, setAnswerState] = useState("");
 
-  const userQuestionIndex = userAnswers.length;
+  const userQuestionIndex =
+    answerState === "" ? userAnswers.length : userAnswers.length - 1;
   const isComplete = userQuestionIndex == QUESTIONS.length;
 
   // callBack:dependency array is empty ([]). This means handleUserAnswer will only be 'created' once
-  const handleUserAnswer = useCallback(function handleUserAnswer(
-    selectedAnswer
-  ) {
-    setUserAnswers((current) => {
-      return [...current, selectedAnswer];
-    });
-  },
-  []);
+  const handleUserAnswer = useCallback(
+    function handleUserAnswer(selectedAnswer) {
+      setAnswerState("answered");
+      setUserAnswers((current) => {
+        return [...current, selectedAnswer];
+      });
+
+      setTimeout(() => {
+        if (selectedAnswer === QUESTIONS[userQuestionIndex].answers[0]) {
+          setAnswerState("correct");
+        } else {
+          setAnswerState("wrong");
+        }
+
+        setTimeout(() => {
+          setAnswerState("");
+        }, 2000);
+      }, 1000);
+    },
+    [userQuestionIndex]
+  );
 
   const handleNextQuestion = useCallback(() => {
     handleUserAnswer(null);
@@ -34,28 +49,17 @@ function Quiz() {
     );
   }
 
-  // grab the current answers index of user:
-  const shuffledAnswers = [...QUESTIONS[userQuestionIndex].answers];
-  // shuffle the answers by: if( - => first,second) & if(+ => second,first):
-  shuffledAnswers.sort(() => Math.random() - 0.5);
-
   return (
     <div id="quiz">
-      <div id="question">
-        {/* every new key <=> the component will be re-created again !*/}
-        <QuestionTimer
-          timer={TIMER}
-          onFinish={handleNextQuestion}
-          key={userQuestionIndex}
-        />
-        <h2>{QUESTIONS[userQuestionIndex].text}</h2>
-        <ul id="answers">{/* output the questions dynamically */}</ul>
-        {shuffledAnswers.map((answer) => (
-          <li className="answer" key={answer}>
-            <button onClick={() => handleUserAnswer(answer)}>{answer}</button>
-          </li>
-        ))}
-      </div>
+      <Question
+        key={userQuestionIndex}
+        questionText={QUESTIONS[userQuestionIndex].text}
+        answers={QUESTIONS[userQuestionIndex].answers}
+        answerState={answerState}
+        selectedAnswer={userAnswers[userAnswers.length - 1]}
+        onSelectAnswer={handleUserAnswer}
+        handleNextQuestion={handleNextQuestion}
+      />
     </div>
   );
 }
