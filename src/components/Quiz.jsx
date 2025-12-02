@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
-import completeImg from "../assets/quiz-complete.png";
 
 import QUESTIONS from "../questions.js";
 import Question from "./Question.jsx";
+import Summary from "./Summary.jsx";
 
 const TIMER = 5000;
 function Quiz() {
@@ -26,12 +26,7 @@ function Quiz() {
   }, [handleUserAnswer]); // since we make 'handleUserAnswer' with callback & empty [], this also won't be created again
 
   if (isComplete) {
-    return (
-      <div id="summary">
-        <img src={completeImg} alt="quiz completion" />
-        <h2>Quiz Completed</h2>
-      </div>
-    );
+    return <Summary userAnswers={userAnswers} />;
   }
 
   return (

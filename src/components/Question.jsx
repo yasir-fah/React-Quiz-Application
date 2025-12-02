@@ -8,8 +8,17 @@ function Question({onSelectAnswer,handleNextQuestion,questionIndex}) {
 
   const [answer, setAnswer] = useState({
     selectedAnswer: '',
-    isCorrect: false
+    isCorrect: null
   })
+
+  let timer = 5000
+  if(answer.selectedAnswer){
+    timer = 1000;
+  }
+
+  if(answer.isCorrect != null){
+    timer = 2000;
+  }
 
   const handleSelectAnswer = (answer) =>{
     // answer selected => jump to line 30, and make localVariable wrong.
@@ -39,11 +48,13 @@ function Question({onSelectAnswer,handleNextQuestion,questionIndex}) {
 
 
   return (
-    <div id="question">
+    <div id="question"> 
       {/* every new key <=> the component will be re-created again !*/}
       <QuestionTimer
-        timer={8000}
-        onFinish={handleNextQuestion}
+        timer={timer}
+        onFinish={answer.selectedAnswer === ''? handleNextQuestion : null}
+        mode={answerState}
+        key={timer}
       />
       <h2>{QUESTIONS[questionIndex].text}</h2>
       <Answers

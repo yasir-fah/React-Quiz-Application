@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function QuestionTimer({ onFinish, timer }) {
+function QuestionTimer({ onFinish, timer, mode }) {
   const [intervalState, setIntervalState] = useState(timer);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ function QuestionTimer({ onFinish, timer }) {
     };
   }, []);
 
-  return <progress value={intervalState} max={timer} />;
+  return <progress value={intervalState} max={timer} className={mode} />;
 }
 
 export default QuestionTimer;
