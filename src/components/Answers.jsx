@@ -29,6 +29,7 @@ function Answers({ answers, selectedAnswer, answerState, onSelect }) {
         return (
           <li className="answer" key={answer}>
             <button
+              disabled={answerState !== ''}
               className={cssStyle}
               onClick={() => onSelect(answer)}
             >

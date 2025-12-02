@@ -7,33 +7,18 @@ import Question from "./Question.jsx";
 const TIMER = 5000;
 function Quiz() {
   const [userAnswers, setUserAnswers] = useState([]);
-  const [answerState, setAnswerState] = useState("");
 
-  const userQuestionIndex =
-    answerState === "" ? userAnswers.length : userAnswers.length - 1;
+  const userQuestionIndex =userAnswers.length;
   const isComplete = userQuestionIndex == QUESTIONS.length;
 
-  // callBack:dependency array is empty ([]). This means handleUserAnswer will only be 'created' once
+  // callBack:dependency array is empty ([]). This means handleUserAnswer will only be 'created' once, React will memoize it.
   const handleUserAnswer = useCallback(
     function handleUserAnswer(selectedAnswer) {
-      setAnswerState("answered");
       setUserAnswers((current) => {
         return [...current, selectedAnswer];
       });
-
-      setTimeout(() => {
-        if (selectedAnswer === QUESTIONS[userQuestionIndex].answers[0]) {
-          setAnswerState("correct");
-        } else {
-          setAnswerState("wrong");
-        }
-
-        setTimeout(() => {
-          setAnswerState("");
-        }, 2000);
-      }, 1000);
     },
-    [userQuestionIndex]
+    []
   );
 
   const handleNextQuestion = useCallback(() => {
@@ -53,10 +38,7 @@ function Quiz() {
     <div id="quiz">
       <Question
         key={userQuestionIndex}
-        questionText={QUESTIONS[userQuestionIndex].text}
-        answers={QUESTIONS[userQuestionIndex].answers}
-        answerState={answerState}
-        selectedAnswer={userAnswers[userAnswers.length - 1]}
+        questionIndex={userQuestionIndex}
         onSelectAnswer={handleUserAnswer}
         handleNextQuestion={handleNextQuestion}
       />

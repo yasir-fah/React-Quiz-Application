@@ -1,7 +1,43 @@
 import QuestionTimer from "./QuestionTimer";
 import Answers from "./Answers";
+import QUESTIONS from '../questions.js';
 
-function Question({questionText,answers,onSelectAnswer, selectedAnswer, answerState,handleNextQuestion}) {
+import { useState } from "react";
+
+function Question({onSelectAnswer,handleNextQuestion,questionIndex}) {
+
+  const [answer, setAnswer] = useState({
+    selectedAnswer: '',
+    isCorrect: false
+  })
+
+  const handleSelectAnswer = (answer) =>{
+    // answer selected => jump to line 30, and make localVariable wrong.
+    // again after 1 sec => jump to line 30 , and make change localVariable depend on answer.
+    setAnswer({
+      selectedAnswer: answer,
+      isCorrect: null,
+    })
+    setTimeout(() =>{
+      setAnswer({
+      selectedAnswer: answer,
+      isCorrect: QUESTIONS[questionIndex].answers[0] === answer,
+    })
+
+    setTimeout(() =>{
+      onSelectAnswer(answer);
+    },2000)
+    },1000)
+  }
+
+  let answerState = '';
+  if(answer.selectedAnswer && answer.isCorrect != null) {
+    answerState = answer.isCorrect ? 'correct' : 'wrong';
+  }else if(answer.selectedAnswer) {
+    answerState = 'answered';
+  }
+
+
   return (
     <div id="question">
       {/* every new key <=> the component will be re-created again !*/}
@@ -9,12 +45,12 @@ function Question({questionText,answers,onSelectAnswer, selectedAnswer, answerSt
         timer={8000}
         onFinish={handleNextQuestion}
       />
-      <h2>{questionText}</h2>
+      <h2>{QUESTIONS[questionIndex].text}</h2>
       <Answers
-        answers={answers}
-        selectedAnswer={selectedAnswer}
+        answers={QUESTIONS[questionIndex].answers}
+        selectedAnswer={answer.selectedAnswer}
         answerState={answerState}
-        onSelect={onSelectAnswer}
+        onSelect={handleSelectAnswer}
       />
     </div>
   );
